@@ -19,10 +19,10 @@ gameState = "splash"
 mixer.init()
 
 # Loading the songs/sound effects
-pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
+pygame.mixer.pre_init(28800, -16, 2, 2048) # setup mixer to avoid sound lag
 
 try:
-    mixer.music.load("media/spaceInvaders.wav")
+    mixer.music.load("media/space_invaders.wav")
     sound = mixer.Sound('media/laser.wav')
     sound2 = mixer.Sound('media/explosion.wav')
     sound3 = mixer.Sound('media/gameOver.wav')
@@ -47,7 +47,7 @@ def gameOverSound():
     sound.play()
 
 def backgroundMusic():
-    mixer.music.set_volume(0.5)
+    mixer.music.set_volume(0.1)
     mixer.music.play()
 
 
@@ -105,7 +105,7 @@ player.penup()
 player.speed(0)
 player.setposition(0,-250)
 player.setheading(90)
-playerSpeed = 12
+playerSpeed = 15
 
 # Multiple enemies
 number_of_enemies = 6
@@ -128,15 +128,18 @@ for enemy in enemies:
 enemyspeed = 0.1
 
 # create a power up visual
-powerUpBullet = turtle.Turtle()
-powerUpBullet.color("blue")
-powerUpBullet.shape("circle")
-powerUpBullet.penup()
-powerUpBullet.speed(0)
-powerUpBullet.setposition(400, 400)
-powerUpBullet.hideturtle()
-
-powerUpBulletState = "ready"
+# powerUpBullet = turtle.Turtle()
+# powerUpBullet.color("blue")
+# powerUpBullet.shape("circle")
+# powerUpBullet.penup()
+# powerUpBullet.speed(0)
+# x = random.randint(-200, 200)
+# y = random.randint(100, 250)
+# enemy.setposition(x, y)
+# powerUpBullet.hideturtle()
+#
+#
+# powerUpBulletState = "notReady"
 
 # create the player's bullet
 bullet = turtle.Turtle()
@@ -230,6 +233,7 @@ while True:
         if gameState=="splash" :
             mainScreen.bgpic("introScreen.png")
             player.hideturtle()
+            bullet.hideturtle()
 
 
         elif gameState=="game" :
@@ -274,10 +278,18 @@ while True:
                     enemy.setposition(x, y)
                     # update score
                     score += 10
-                    if score % 10==0 and score!=0 :
-                        enemyspeed += 0.05
-                    else:
-                        enemyspeed += -0.05
+                    if score % 150==0 and score!=0 :
+                        playerSpeed += 3
+
+                    if score % 100==0 and score!=0 :
+                        bulletspeed += 0.3
+
+                    if score % 50==0 and score!=0 :
+                        if enemyspeed >=0.01:
+                            enemyspeed += 0.05
+                        elif enemyspeed <= -0.01:
+                            enemyspeed += -0.03
+
                     print("increase speed")
                     print(enemyspeed)
 
@@ -290,6 +302,7 @@ while True:
                     enemy.hideturtle()
                     print("Game Over")
                     break
+
 
             # move the bullet
             if bulletstate=="fire" :
@@ -322,32 +335,42 @@ while True:
             #     enemy.hideturtle()
             #     gameOverSound()
             #     gameState = "gameover"
-            if enemy.ycor() < -200 :
+            if enemy.ycor() < -225 :
                 for e in enemies :
                     player.hideturtle()
                     enemy.hideturtle()
                     gameOverSound()
                     gameState = "gameover"
 
-
+        # game over state
         else :
-            # how to make all enemies dissapear
-            mainScreen.bgpic("gameOver.png")
+            # enemies/player/bullet dissapear
+            for e in enemies :
+                e.hideturtle()
+            player.hideturtle()
+            bullet.hideturtle()
+            # Game over screen with score
+            mainScreen.bgpic("gameOverScreen.png")
             score_pen = turtle.Turtle()
             score_pen.speed(0)
             score_pen.color("white")
             score_pen.penup()
-            score_pen.setposition(-50, -200)
+            score_pen.setposition(-80, -200)
             scorestring = "Score: %s" % score
             score_pen.write(scorestring, False, align="left", font=("Arial", 30, "normal"))
             score_pen.hideturtle()
+    # if paused
     else:
+        mainScreen.bgpic("pauseScreen.png")
+        for e in enemies :
+            e.hideturtle()
+        player.hideturtle()
+        bullet.hideturtle()
         mainScreen.update()
 
 
 
     mainScreen.update()
-    #backgroundMusic()
 
 
 
